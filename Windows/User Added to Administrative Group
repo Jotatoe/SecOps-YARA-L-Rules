@@ -1,0 +1,26 @@
+rule Windows_User_Added_to_Administrative_Group {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects users being added to an administrative group (security-enabled global group, local security group, security-enabled universal group)"
+    date = "2025-06-01"
+    severity = "HIGH"
+    priority = "HIGH"
+    platform = "Windows"
+    mitre_attack_tactic = "Privilege Escalation"
+    mitre_attack_technique = "Abuse Elevation Control Mechanism"
+    version = "1.00"
+    
+  events:
+    ($event.metadata.product_event_type = "4728" or $event.metadata.product_event_type = "4731" or $event.metadata.product_event_type = "4756")
+    $event.metadata.vendor_name = "Microsoft"
+    $event.principal.hostname = $targetHost
+    $event.target.user.userid = $targetUser
+    not $event.target.user.userid in %admin_user_list.Usernames
+
+  outcome:
+    $user = array_distinct($targetUser)
+    $host = array_distinct($targetHost)
+
+  condition:
+    $event
+}
