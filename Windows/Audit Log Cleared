@@ -17,7 +17,7 @@ rule Windows_Audit_Log_Cleared {
     $event.target.user.userid = $targetUser
 
   outcome:
-    $target_users_uniq_list = array($targetUser)
+    $user = array($targetUser)
 
   condition:
     $event
