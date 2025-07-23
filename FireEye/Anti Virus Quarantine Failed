@@ -1,4 +1,4 @@
-rule FireEye_STE_Anti_Virus_Quarantine_Failed {   
+rule FireEye_Anti_Virus_Quarantine_Failed {   
   meta:
     author = "Jonathan Heng"
     description = "Detects FireEye Anti-Virus alerts on malware fount but not quarantined"
