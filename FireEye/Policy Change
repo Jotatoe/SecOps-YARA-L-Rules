@@ -1,0 +1,20 @@
+rule FireEye_Policy_Changes {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects FireEye security policy change events from FireEye logs"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "FireEye"
+    mitre_attack_tactic = "Defense Evasion"
+    mitre_attack_technique = "Impair Defenses: Disable or Modify Tools"
+    version = "1.00"
+
+
+  events:
+    $e.metadata.vendor_name = "FireEye" nocase
+    $e.metadata.event_type = "USER_RESOURCE_ACCESS"
+    ($e.metadata.product_event_type = /Policy Update/ nocase or $e.metadata.product_event_type = /Policy Insert/ nocase)
+
+  condition:
+    $e
+}
