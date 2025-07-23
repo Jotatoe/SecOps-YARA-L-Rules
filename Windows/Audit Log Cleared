@@ -15,9 +15,11 @@ rule Windows_Audit_Log_Cleared {
     $event.metadata.product_event_type = "1102"
     $event.metadata.vendor_name = "Microsoft"
     $event.target.user.userid = $targetUser
+    $event.target.hostname = $targetHost
 
   outcome:
-    $user = array($targetUser)
+    $user = array_distinct($targetUser)
+    $host = array_distinct($targetHost)
 
   condition:
     $event
