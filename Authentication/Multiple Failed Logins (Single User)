@@ -1,0 +1,26 @@
+rule Multiple_Failed_Logins_By_Single_User
+{
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects multiple failed logins by a single user"
+    date = "2025-06-01"
+    severity = "LOW"
+    priority = "LOW"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Brute Force"
+    version = "1.00"
+    
+  events:
+    $fail.metadata.event_type = "USER_LOGIN"
+    $fail.metadata.vendor_name = "Microsoft"
+    $fail.target.user.userid = $targetUser
+    $fail.security_result.action = "BLOCK"
+    $fail.target.user.userid != /^.*\$/
+
+  match:
+    $targetUser over 10m
+
+  condition:
+    #fail > 4
+}
