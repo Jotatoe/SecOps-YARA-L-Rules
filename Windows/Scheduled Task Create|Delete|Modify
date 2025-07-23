@@ -1,0 +1,25 @@
+rule Windows_Scheduled_Task_Created_Deleted_Modified {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects creation/deletion/modification of scheduled tasks"
+    date = "2025-06-01"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Persistence, Defence Evasion"
+    mitre_attack_technique = "Scheduled Task/Job"
+    version = "1.00"
+    
+  events:
+    ($event.metadata.event_type = "SCHEDULED_TASK_CREATION" or $event.metadata.event_type = "SCHEDULED_TASK_DELETION" or $event.metadata.event_type = "SCHEDULED_TASK_MODIFICATION")
+//    ($event.metadata.product_event_type = "4698" or $event.metadata.product_event_type = "4699" or $event.metadata.product_event_type = "4702") // Alternative detection method 
+    $event.metadata.vendor_name = "Microsoft"
+    $event.target.user.userid = $targetUser
+
+  outcome:
+    $users = array_distinct($targetUser)
+    $hosts = array_distinct($targetHost)
+
+  condition:
+    $event
+}
