@@ -1,0 +1,23 @@
+rule Windows_Unauthorised_Service_Installation {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects new services being installed"
+    date = "2025-06-01"
+    severity = "LOW"
+    priority = "LOW"
+    platform = "Windows"
+    mitre_attack_tactic = "Defence Evasion"
+    mitre_attack_technique = "System Binary Proxy Execution"
+    version = "1.00"
+    
+  events:
+    $event.metadata.event_type = "SERVICE_CREATION"
+//    ($event.metadata.product_event_type = "7045" or $event.metadata.product_event_type = "4697")
+    $event.metadata.vendor_name = "Microsoft"
+
+  outcome:
+    $target_users_uniq_list = array_distinct($event.principal.user.userid)
+
+  condition:
+    $event
+}
