@@ -1,0 +1,24 @@
+rule Windows_Privileged_Account_Monitoring {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects privileged users activities on specific endpoints"
+    date = "2025-06-16"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Privilege Escalation"
+    mitre_attack_technique = "Abuse Elevation Control Mechanism"
+    version = "1.00"
+    
+  events:
+    $event.metadata.vendor_name = "Microsoft"
+    $event.principal.hostname = $targetHost
+    $event.target.user.userid = $targetUser
+    ($targetHost = %Monitored_Privileged_Accounts.Hostname and $targetUser = %Monitored_Privileged_Accounts.Username)
+  
+  match:
+    $targetUser over 1m
+
+  condition:
+    $event
+}
