@@ -1,0 +1,26 @@
+rule Windows_User_Account_Deleted {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects the deletion of an existing user account"
+    date = "2025-06-01"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Defence Evasion"
+    mitre_attack_technique = "Indicator Removal"
+    version = "1.00"
+    
+  events:
+    $event.metadata.event_type = "USER_DELETION"
+//    $event.metadata.product_event_type = "4726" // Alternative detection method
+    $event.metadata.vendor_name = "Microsoft"
+    $event.target.user.userid = $targetUser
+    $event.principal.hostname = $sourceHost
+
+  outcome:
+    $user = array_distinct($targetUser)
+    $host = array_distinct($sourceHost)
+
+  condition:
+    $event
+}
