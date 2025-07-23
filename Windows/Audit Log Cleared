@@ -1,0 +1,24 @@
+rule Windows_Audit_Log_Cleared {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects audit logs being cleared"
+    date = "2025-06-01"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Defence Evasion"
+    mitre_attack_technique = "Indicator Removal"
+    version = "1.00"
+    
+  events:
+//    $event.metadata.event_type = "SYSTEM_AUDIT_LOG_WIPE"  // Alternative detection method
+    $event.metadata.product_event_type = "1102"
+    $event.metadata.vendor_name = "Microsoft"
+    $event.target.user.userid = $targetUser
+
+  outcome:
+    $target_users_uniq_list = array($targetUser)
+
+  condition:
+    $event
+}
