@@ -1,0 +1,26 @@
+rule Multiple_Failed_Logins_On_Linux {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects multiple failed logins by a single user on a Linux device"
+    date = "2025-06-01"
+    severity = "LOW"
+    priority = "LOW"
+    platform = "Linux"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Brute Force"
+    version = "1.00"
+    
+  events:
+    $fail.metadata.event_type = "USER_LOGIN"
+    $fail.target.platform = "LINUX"
+    $fail.target.user.userid = $targetUser
+    $fail.src.ip = $sourceIP
+    $fail.principal.hostname = $targetHost
+    $fail.security_result.action = "BLOCK"
+
+  match:
+    $targetUser, $targetHost, $sourceIP over 5m
+
+  condition:
+    #fail > 2
+}
