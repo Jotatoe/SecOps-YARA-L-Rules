@@ -1,0 +1,35 @@
+rule Multiple_Failed_Logins_Followed_By_Success {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects multiple failed logins followed by successful login of a single user"
+    date = "2025-06-01"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Brute Force"
+    version = "1.00"
+    
+  events:
+    $fail.metadata.event_type = "USER_LOGIN"
+    $fail.metadata.vendor_name = "Microsoft"
+    $fail.principal.hostname = $targetHost
+    $fail.target.user.userid = $targetUser
+    $fail.security_result.action = "BLOCK"
+    $fail.target.user.userid != /^.*\$/
+    $fail.metadata.event_timestamp.seconds <= $success.metadata.event_timestamp.seconds
+
+    $success.metadata.event_type = "USER_LOGIN"
+    $success.target.user.userid = $targetUser
+    $success.principal.hostname = $targetHost
+    $success.security_result.action = "ALLOW"
+    $success.metadata.product_event_type != "4648"
+    $success.target.user.userid != /^.*\$/
+
+  match:
+    $targetUser, $targetHost over 10m
+
+  condition:
+    #fail > 4 and $success
+}
+
