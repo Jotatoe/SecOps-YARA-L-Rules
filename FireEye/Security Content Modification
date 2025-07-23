@@ -1,0 +1,19 @@
+rule FireEye_Security_Content_Modification_Detection {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects security content file alteration events from FireEye logs"
+    severity = "LOW"
+    priority = "LOW"
+    platform = "FireEye"
+    mitre_attack_tactic = "Defense Evasion"
+    mitre_attack_technique = "Indicator Removal on Host: File Deletion"
+    version = "1.00"
+
+  events:
+    $e.metadata.vendor_name = "FireEye" nocase
+    $e.metadata.event_type = "USER_RESOURCE_ACCESS"
+    $e.metadata.product_event_type = /FireEye Security Content Updated/ nocase
+
+  condition:
+    $e
+}
