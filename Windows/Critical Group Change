@@ -1,0 +1,23 @@
+rule Windows_Critical_Group_Change {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects users being added/removed from a critical group (security-enabled global group, local security group, security-enabled universal group)"
+    date = "2025-06-01"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Privilege Escalation"
+    mitre_attack_technique = "Abuse Elevation Control Mechanism"
+    version = "1.00"
+    
+  events:
+    ($event.metadata.product_event_type = "4728" or $event.metadata.product_event_type = "4731" or $event.metadata.product_event_type = "4756" or $event.metadata.product_event_type = "4729" or $event.metadata.product_event_type = "4733" or $event.metadata.product_event_type = "4757")
+    $event.metadata.vendor_name = "Microsoft"
+    $event.target.user.userid = $targetUser
+    
+  outcome:
+    $user = array($targetUser)
+
+  condition:
+    $event
+}
