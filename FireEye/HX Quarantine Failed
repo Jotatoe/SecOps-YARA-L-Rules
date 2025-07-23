@@ -1,0 +1,33 @@
+rule FireEye_HX_Quarantine_Failed {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects when FireEye alerts on HX Quarantine Failure"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "FireEye"
+    mitre_attack_tactic = "Defense Evasion"
+    mitre_attack_technique = "Impair Defenses: Disable or Modify Tools"
+    version = "1.00"
+
+  events:
+    // Define the event and filter specifically for FortiAnalyzer logs
+    $e.metadata.vendor_name = "FireEye" nocase
+
+    (
+    $e.metadata.product_event_type = /Malware Hit Found/ nocase and
+    $e.additional.fields["Resolution"] = "QUARANTINED" and
+    $e.additional.fields["Category Outcome"] != "Success"
+    ) 
+    or
+    (
+    $e.metadata.product_event_type = /FireEye Quarantine Completed/ nocase and
+    $e.security_result.action_details = /Quarantine.*FILE_DELETE_FAILED/ and
+    $e.additional.fields["Category Outcome"] = "Success"
+    )
+
+  outcome:
+    $eventOutcome = $e.additional.fields["Category Outcome"]
+  
+  condition:
+    $e 
+}
