@@ -1,0 +1,28 @@
+rule Windows_User_Added_to_High_Privilege_Group {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects when a user is added to a pre-defined list of sensitive (security or distribution) Windows groups. This monitors critical privilege changes and sensitive communication group memberships."
+    date = "2025-06-01"
+    severity = "HIGH"
+    priority = "HIGH"
+    platform = "Windows"
+    mitre_attack_tactic = "Persistence"
+    mitre_attack_technique = "Account Manipulation"
+    version = "1.00"
+
+  events:
+    $group_add_event.metadata.vendor_name = "Microsoft"
+    $group_add_event.metadata.product_event_type in %member_added_eventID_all.Event_ID // {4756, 4728, 4751, 4761, 4746, 4732}
+    $group_add_event.target.group.group_display_name in %high_privilege_groups.Group_Name
+//    $group_add_event.target.user.userid != "" //target.user.userid is not shown, target.user.user_display_name is shown instead
+
+  outcome:
+    $added_user = $group_add_event.target.user.user_display_name
+    $target_group = $group_add_event.target.group.group_display_name
+    $target_group_sid = $group_add_event.target.group.windows_sid 
+    $initiating_user = $group_add_event.principal.user.userid
+    $initiating_user_domain = $group_add_event.principal.user.windows_sid 
+
+  condition:
+    $group_add_event
+}
