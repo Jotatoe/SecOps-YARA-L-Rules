@@ -14,9 +14,11 @@ rule Windows_Critical_Group_Change {
     ($event.metadata.product_event_type = "4728" or $event.metadata.product_event_type = "4731" or $event.metadata.product_event_type = "4756" or $event.metadata.product_event_type = "4729" or $event.metadata.product_event_type = "4733" or $event.metadata.product_event_type = "4757")
     $event.metadata.vendor_name = "Microsoft"
     $event.target.user.userid = $targetUser
+    $event.target.hostname = $targetHost
     
   outcome:
-    $user = array($targetUser)
+    $user = array_distinct($targetUser)
+    $host = array_distinct($targetHost)
 
   condition:
     $event
