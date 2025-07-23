@@ -1,0 +1,26 @@
+rule Windows_User_Account_Created {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects the creation of a new user account"
+    date = "2025-06-01"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Windows"
+    mitre_attack_tactic = "Resource Development"
+    mitre_attack_technique = "Establish Accounts"
+    version = "1.00"
+    
+  events:
+    $event.metadata.event_type = "USER_CREATION"
+//    $event.metadata.product_event_type = "4720" // Alternative detection method
+    $event.metadata.vendor_name = "Microsoft"
+    $event.target.user.userid = $targetUser
+    $event.principal.hostname = $sourceHost
+
+  outcome:
+    $user = array_distinct($targetUser)
+    $host = array_distinct($sourceHost)
+
+  condition:
+    $event
+}
