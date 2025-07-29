@@ -1,0 +1,28 @@
+rule Fortianalyzer_IPS_Outbound_Dropped {
+  meta:
+    author = "CloudMile"
+    description = "IPS detected suspicious outbound traffic. IPS detected suspicious outbound traffic and dropped - context is local to remote (Separate rule for internal infra activities and client's activities)"
+    severity = "LOW"
+    priority = "MEDIUM"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Command and Control"
+    mitre_attack_technique = "Exfiltration Over C2 Channel"
+    version = "1.00"
+  
+  events:
+//  Define the event and filter specifically for FortiAnalyzer logs
+    $e.metadata.product_name = "Fortianalyzer"
+    $e.metadata.vendor_name = "Fortinet"
+    $e.metadata.product_event_type = "utm - ips" nocase
+    not $e.principal.hostname in %sptel_infra_assets.hostnames
+    $e.network.direction = "OUTBOUND"
+    $e.security_result.action = "BLOCK"
+    $e.security_result.detection_fields.key = "crscore"
+    $score = cast.as_float($e.security_result.detection_fields.value)
+
+  outcome:
+   $risk_score = if($score > 70, 100, 0)
+
+  condition:
+    $e and ($risk_score = 100)
+}
