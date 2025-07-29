@@ -1,6 +1,6 @@
 rule Fortianalyzer_IPS_Outbound_Dropped {
   meta:
-    author = "CloudMile"
+    author = "Jonathan Heng"
     description = "IPS detected suspicious outbound traffic. IPS detected suspicious outbound traffic and dropped - context is local to remote (Separate rule for internal infra activities and client's activities)"
     severity = "LOW"
     priority = "MEDIUM"
