@@ -1,0 +1,30 @@
+rule Fortianalyzer_File_Inclusion {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects when known File Inclusion patterns are found in URLs"
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Initial Access"
+    mitre_attack_technique = "Exploit Public-Facing Application"
+    version = "1.00"
+
+  events:    
+    $e.metadata.event_type = "NETWORK_HTTP"
+    $e.metadata.vendor_name = "Fortinet" nocase
+//  Look for common file inclusion patterns in the URL
+//  LFI: Directory Traversal ("../" and "....//" patterns are not included yet due to interference with regex function)
+    (re.regex($e.target.url, %file_inclusion_pattern.LFI)) or
+//  RFI: Remote file inclusion attempts
+    (re.regex($e.target.url, %file_inclusion_pattern.RFI)) or
+//  LFI/RFI: Common sensitive file names in parameters
+    (re.regex($e.target.url, `(etc/passwd|win.ini|boot.ini)`))
+    $e.metadata.vendor_name = $vendor
+    $vendor = %file_inclusion_pattern.Vendor
+
+  match:
+    $vendor over 1m
+
+  condition:
+    $e
+}
