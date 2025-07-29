@@ -1,6 +1,6 @@
 rule Fortianalyzer_IPS_Inbound_Not_Drop {
   meta:
-    author = "CloudMile"
+    author = "Jonathan Heng"
     description = "IPS detected inbound attack but not dropped. Context is remote to local."
     severity = "MEDIUM"
     priority = "HIGH"
