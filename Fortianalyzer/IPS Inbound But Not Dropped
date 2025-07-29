@@ -1,0 +1,22 @@
+rule Fortianalyzer_IPS_Inbound_Not_Drop {
+  meta:
+    author = "CloudMile"
+    description = "IPS detected inbound attack but not dropped. Context is remote to local."
+    severity = "MEDIUM"
+    priority = "HIGH"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Initial Access"
+    mitre_attack_technique = "Exploit Public-Facing Application"
+    version = "1.00"
+
+  events:
+    $e.metadata.product_name = "Fortianalyzer"
+    $e.metadata.vendor_name = "Fortinet"
+    $e.metadata.product_event_type = "utm - ips" nocase
+    not $e.principal.hostname in %sptel_infra_assets.hostnames
+    $e.security_result.action != "BLOCK"
+    $e.network.direction = "INBOUND"
+
+  condition:
+    $e
+}
