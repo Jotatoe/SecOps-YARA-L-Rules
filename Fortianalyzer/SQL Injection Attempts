@@ -1,0 +1,20 @@
+rule Fortianalyzer_SQL_Injection {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects SQL injection events based on signatures. Data is sourced from FortiAnalyzer."
+    severity = "MEDIUM"
+    priority = "MEDIUM"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Initial Access"
+    mitre_attack_technique = "Exploit Public-Facing Application"
+    version = "1.00"
+  
+  events:
+//  Define the event and filter specifically for FortiAnalyzer logs
+    $e.metadata.vendor_name = "Fortinet"
+    $e.metadata.product_name = "Fortianalyzer"
+    $e.metadata.description = "SQL Injection" or $e.metadata.description = "SQL Injection (Extended)"
+    
+  condition:
+    $e
+}
