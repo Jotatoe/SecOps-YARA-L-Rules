@@ -1,0 +1,26 @@
+rule Fortianalyzer_Excessive_VPN_Failure {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects more than 50 VPN authentication failures from the same user in 5 minutes"
+    severity = "MEDIUM"
+    priority = "LOW"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Brute Force: Password Guessing"
+    version = "1.00"
+
+  events:
+    $e.metadata.product_name = "Fortianalyzer"
+    $e.metadata.event_type = "USER_LOGIN"
+    $e.security_result.action = "BLOCK"
+    $user = $e.principal.user.userid
+
+  match:
+    $user over 5m
+
+  outcome:
+    $failure_count = count($user)
+
+  condition:
+    $e and ($failure_count > 2)
+}
