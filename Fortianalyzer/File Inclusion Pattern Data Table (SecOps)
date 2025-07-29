@@ -1,0 +1,9 @@
+LFI,RFI,Vendor
+php://,http%3A%2F%2F,Fortinet
+%2e%2e/,include=ftp://,Fortinet
+zip://,page=https://,Fortinet
+%2e%2e%2f,file=http://,Fortinet
+data://,http%3A%2F%2F,Fortinet
+..\\,http%3A%2F%2F,Fortinet
+../,http%3A%2F%2F,Fortinet
+....//,http%3A%2F%2F,Fortinet
