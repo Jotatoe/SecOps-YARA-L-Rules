@@ -1,0 +1,33 @@
+rule Windows_Admin_Login_from_Unauthorised_IP {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects login attempts to an Admin account from an unauthorised IP address."
+    date = "2025-06-01"
+    severity = "LOW"
+    priority = "LOW"
+    platform = "Windows"
+    mitre_attack_tactic = "Initial Access, Persistence, Privilege Escalation"
+    mitre_attack_technique = "Valid Accounts"
+    version = "1.00"
+
+  events:
+    $login.metadata.event_type = "USER_LOGIN"
+    $login.metadata.vendor_name = "Microsoft"
+    $login.principal.hostname = $targetHost
+    $login.target.user.userid = $user
+    $user in %admin_user_list.Usernames
+    (($login.security_result.category = "AUTH_VIOLATION"  AND $login.security_result.action = "BLOCK") OR $login.security_result.action = "ALLOW")
+    $login.src.ip = $srcIP
+    not $srcIP in %whitelisted_IPs
+    $login.metadata.product_event_type != "4648"
+
+  outcome:
+    $supp = array_distinct($srcIP)
+    $suppression_key = $supp
+
+  condition:
+    $login
+
+  options:
+    suppression_window = 1h
+}
