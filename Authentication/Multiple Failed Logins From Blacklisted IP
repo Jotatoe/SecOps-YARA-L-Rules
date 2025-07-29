@@ -1,0 +1,32 @@
+rule Multiple_Failed_Logins_From_Blacklisted_IP {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects multiple failed logins from a blacklisted IP"
+    date = "2025-06-01"
+    severity = "LOW"
+    priority = "LOW"
+    platform = "Linux"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Brute Force"
+    version = "1.00"
+    
+  events:
+//  Rule only works for Linux based devices - Windows login logs do not show IP address
+    $fail.metadata.event_type = "USER_LOGIN"
+    $fail.src.ip = $sourceIP
+    $sourceIP in %blacklisted_IPs
+    $fail.target.user.userid = $targetUser
+    $fail.security_result.action = "BLOCK"
+
+  match:
+    $sourceIP over 30m
+
+  outcome:
+    $risk_score = max(50)
+    $target_user_distinct_count = count_distinct($targetUser)
+    $target_user_count = count($targetUser)
+    $target_users_uniq_list = array_distinct($targetUser)
+
+  condition:
+    #fail > 9
+}
