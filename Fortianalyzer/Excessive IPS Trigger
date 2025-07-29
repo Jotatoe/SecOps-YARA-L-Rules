@@ -1,0 +1,27 @@
+rule Fortianalyzer_Excessive_IPS_Trigger {
+  meta:
+    author = "CloudMile"
+    description = "Detects when the same source IP triggers more than 50 IPS events within 10 minutes"
+    severity = "MEDIUM"
+    priority = "LOW"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Reconnaissance"
+    mitre_attack_technique = "Active Scanning: IP Block Scanning"
+    version = "1.00"
+
+  events:
+    $ips.metadata.product_name = "Fortianalyzer"
+    $ips.metadata.vendor_name = "Fortinet"
+    $ips.metadata.product_event_type = "utm - ips" nocase
+    not $ips.principal.hostname in %sptel_infra_assets.hostnames
+    $ips.principal.ip = $src_ip
+
+  match:
+    $src_ip over 10m
+
+  outcome:
+    $total_count = count($src_ip)
+
+  condition:
+    #ips > 50
+}
