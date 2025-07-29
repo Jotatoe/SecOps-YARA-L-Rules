@@ -1,6 +1,6 @@
 rule Fortianalyzer_Excessive_IPS_Trigger {
   meta:
-    author = "CloudMile"
+    author = "Jonathan Heng"
     description = "Detects when the same source IP triggers more than 50 IPS events within 10 minutes"
     severity = "MEDIUM"
     priority = "LOW"
