@@ -1,0 +1,22 @@
+rule Fortianalyzer_XSS {
+  meta:
+    author = "Jonathan Heng"
+    description = "Detects any event where the Fortinet IPS engine has identified an XSS signature."
+    severity = "HIGH"
+    priority = "High"
+    platform = "Fortianalyzer"
+    mitre_attack_tactic = "Initial Access"
+    mitre_attack_technique = "Exploit Public-Facing Application"
+    version = "1.00"
+
+  events:
+//  Match events from the Fortinet Intrusion Prevention System
+    $e.metadata.product_event_type = "utm - ips"
+
+//  Use a case-insensitive regex to find "XSS" in the description
+//  This is broader than the specific rule from before and will catch more variations.
+    $e.security_result.description = /XSS/ nocase
+
+  condition:
+    $e
+}
