@@ -1,0 +1,23 @@
+rule Hacktool_Quarkspwdump_Dump_File {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects a dump file written by QuarksPwDump password dumper"
+    reference = "https://jpcertcc.github.io/ToolAnalysisResultSheet/details/QuarksPWDump.htm"
+    sigma_id = "847def9e-924d-4e90-b7c4-5f581395a2b4"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "OS Credential Dumping: Security Account Manager"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "FILE_UNCATEGORIZED"
+    (
+        $event.target.file.names = /\\AppData\\Local\\Temp\\SAM-/ nocase and 
+        $event.target.file.names = /\.dmp/ nocase
+    )
+    
+  condition: 
+    $event
+}
