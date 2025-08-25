@@ -1,0 +1,21 @@
+rule Turla_PNG_Dropper_Service {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "This method detects malicious services mentioned in Turla PNG dropper report by NCC Group in November 2018"
+    reference = "https://research.nccgroup.com/2018/11/22/turla-png-dropper-is-back/"
+    sigma_id = "1228f8e2-7e79-4dea-b0ad-c91f1d5016c1"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Persistence"
+    mitre_attack_technique = "Create or Modify System Process: Windows Service"
+    version = "1.00" 
+
+  events:
+    $event.metadata.product_name = "Service Control Manager" nocase and
+    $event.metadata.product_event_type = "7045" and
+    $event.target.process.file.names = "WerFaultSvc" nocase
+    
+  condition: 
+    $event
+}
