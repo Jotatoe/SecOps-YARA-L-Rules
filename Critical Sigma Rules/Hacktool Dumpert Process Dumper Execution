@@ -1,0 +1,23 @@
+rule Hacktool_Dumpert_Process_Dumper_Execution {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects the use of Dumpert process dumper, which dumps the lsass.exe process memory"
+    reference = "https://github.com/outflanknl/Dumpert, https://unit42.paloaltonetworks.com/actors-still-exploiting-sharepoint-vulnerability/"
+    sigma_id = "2704ab9e-afe2-4854-a3b1-0c0706d03578"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "OS Credential Dumping: LSASS Memory"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "PROCESS_LAUNCH"
+    (
+        $event.target.file.md5 = /MD5=09D278F9DE118EF09163C6140255C690/ nocase or
+        $event.target.process.command_line = /Dumpert\.dll/ nocase
+    )
+    
+  condition: 
+    $event
+}
