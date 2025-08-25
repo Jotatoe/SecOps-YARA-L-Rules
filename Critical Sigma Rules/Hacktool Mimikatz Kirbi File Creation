@@ -1,0 +1,20 @@
+rule Hacktool_Mimikatz_Kirbi_File_Creation {
+  meta:
+    author = "Florian Roth (Nextron Systems), David ANDRE"
+    description = "Detects the creation of files created by mimikatz such as \".kirbi\", \"mimilsa.log\", etc."
+    reference = "https://cobalt.io/blog/kerberoast-attack-techniques, https://pentestlab.blog/2019/10/21/persistence-security-support-provider/"
+    sigma_id = "9e099d99-44c2-42b6-a6d8-54c3545cab29"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Steal or Forge Kerberos Tickets"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "FILE_UNCATEGORIZED"
+    $event.target.file.names = /\.kirbi|mimilsa\.log/ nocase
+    
+  condition: 
+    $event
+}
