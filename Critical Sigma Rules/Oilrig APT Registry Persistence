@@ -1,0 +1,20 @@
+rule Oilrig_APT_Registry_Persistence {
+  meta:
+    author = "Florian Roth (Nextron Systems), Markus Neis, Jonhnathan Ribeiro, Daniil Yugoslavskiy, oscd.community"
+    description = "Detects OilRig registry persistence as reported by Nyotron in their March 2018 report"
+    reference = "https://web.archive.org/web/20180402134442/https://nyotron.com/wp-content/uploads/2018/03/Nyotron-OilRig-Malware-Report-March-2018C.pdf"
+    sigma_id = "7bdf2a7c-3acc-4091-9581-0a77dad1c5b5"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Persistence, Defence Evasion, Command and Control"
+    mitre_attack_technique = "Scheduled Task/Job: Scheduled Task, Create or Modify System Process: Windows Service, Modify Registry, Application Layer Protocol: DNS"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "REGISTRY_UNCATEGORIZED"
+    $event.target.registry.registry_key = /SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UMe|SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UT/ nocase
+    
+  condition: 
+    $event
+}
