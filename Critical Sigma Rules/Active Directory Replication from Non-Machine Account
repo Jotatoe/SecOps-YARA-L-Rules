@@ -1,0 +1,26 @@
+rule Active_Directory_Replication_from_Non_Machine_Account {
+ meta:
+    author = "Roberto Rodriguez @Cyb3rWard0g"
+    description = "Detects potential abuse of Active Directory Replication Service (ADRS) from a non machine account to request credentials.."
+    license = "https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md"
+    reference = "https://threathunterplaybook.com/hunts/windows/180815-ADObjectAccessReplication/notebook.html, https://threathunterplaybook.com/library/windows/active_directory_replication.html, https://threathunterplaybook.com/hunts/windows/190101-ADModDirectoryReplication/notebook.html"
+    sigma_id = "17d619c1-e020-4347-957e-1d1207455c93"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "OS Credential Dumping: DCSync"
+    version = "1.00"
+
+  events:
+    $selection.metadata.product_event_type = "4662" and 
+    $selection.security_result.about.resource.name = "0x100" nocase and 
+    (re.regex($selection.security_result.detection_fields.value, `.*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2.*`) nocase or 
+    re.regex($selection.security_result.detection_fields.value, `.*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2.*`) nocase or 
+    re.regex($selection.security_result.detection_fields.value, `.*89e95b76-444d-4c62-991a-0facbeda640c.*`) nocase) and 
+    not ((re.regex($selection.principal.user.user_display_name, `.*\$`) nocase) or 
+    (re.regex($selection.principal.user.user_display_name, `MSOL_.*`) nocase))
+
+  condition:
+    $selection
+}
