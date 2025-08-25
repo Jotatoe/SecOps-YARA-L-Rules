@@ -1,0 +1,21 @@
+rule Hacktool_Dinjector_Powershell_Cradle_Execution {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects the use of the Dinject PowerShell cradle based on the specific flags"
+    reference = "https://web.archive.org/web/20211001064856/https://github.com/snovvcrash/DInjector"
+    sigma_id = "d78b5d61-187d-44b6-bf02-93486a80de5a"
+    severity = "CRITIACL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Defense Evasion"
+    mitre_attack_technique = "Process Injection"
+    version = "1.00"
+
+  events:
+    $event.metadata.event_type = "PROCESS_LAUNCH"
+    $event.target.process.command_line = / \/am51/ nocase and
+    $event.target.process.command_line = / \/password/ nocase
+    
+  condition: 
+    $event
+}
