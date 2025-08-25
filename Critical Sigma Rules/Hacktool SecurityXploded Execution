@@ -1,0 +1,24 @@
+rule Hacktool_SecurityXploded_Execution {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects the execution of SecurityXploded Tools"
+    reference = "https://securityxploded.com/, https://web.archive.org/web/20200601000524/https://cyberx-labs.com/blog/gangnam-industrial-style-apt-campaign-targets-korean-industrial-companies/"
+    sigma_id = "7679d464-4f74-45e2-9e01-ac66c5eb041a"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "Credentials from Password Stores"
+    version = "1.00"
+
+  events:
+    $event.metadata.vendor_name = "SecurityXploded" nocase
+    $event.metadata.event_type = "PROCESS_LAUNCH"
+    (
+        $event.target.process.file.full_path = /PasswordDump\.exe$/ nocase or
+        $event.target.process.file.names = /PasswordDump\.exe$/ nocase
+    )
+    
+  condition: 
+    $event
+}
