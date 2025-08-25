@@ -1,0 +1,24 @@
+rule Winnti_Pipemon_Characteristics {
+  meta:
+    author = "Florian Roth (Nextron Systems), oscd.community"
+    description = "Detects specific process characteristics of Winnti Pipemon malware reported by ESET"
+    reference = "https://www.welivesecurity.com/2020/05/21/no-game-over-winnti-group/"
+    sigma_id = "73d70463-75c9-4258-92c6-17500fe972f2"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Defense Evasion"
+    mitre_attack_technique = "Hijack Execution Flow: DLL"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "PROCESS_LAUNCH"
+    $event.target.process.command_line = /setup0\.exe -p/ nocase or
+    (
+        $event.target.process.command_line = /setup\.exe/ nocase and
+        $event.target.process.command_line = /-x:0|-x:1|-x:2/ nocase
+    )
+    
+  condition: 
+    $event
+}
