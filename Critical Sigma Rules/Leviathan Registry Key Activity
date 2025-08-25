@@ -1,0 +1,20 @@
+rule Leviathan_Registry_Key_Activity {
+  meta:
+    author = "Aidan Bracher"
+    description = "Detects registry key used by Leviathan APT in Malaysian focused campaign"
+    reference = "https://www.elastic.co/blog/advanced-techniques-used-in-malaysian-focused-apt-campaign"
+    sigma_id = "70d43542-cd2d-483c-8f30-f16b436fd7db"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Persistence"
+    mitre_attack_technique = "Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "REGISTRY_UNCATEGORIZED"
+    $event.target.registry.registry_key = /\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\ntkd/ nocase
+    
+  condition: 
+    $event
+}
