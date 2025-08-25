@@ -1,0 +1,20 @@
+rule Pandemic_Registry_Key {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects Pandemic Windows Implant"
+    reference = "https://wikileaks.org/vault7/#Pandemic, https://twitter.com/MalwareJake/status/870349480356454401"
+    sigma_id = "47e0852a-cf81-4494-a8e6-31864f8c86ed"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Command and Control"
+    mitre_attack_technique = "Ingress Tool Transfer"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "REGISTRY_UNCATEGORIZED"
+    $event.target.registry.registry_key = /\\SYSTEM\\CurrentControlSet\\services\\null\\Instance/ nocase
+    
+  condition: 
+    $event
+}
