@@ -1,0 +1,21 @@
+rule WCE_wceaux_dll_Access {
+  meta:
+    author = "Thomas Patzke"
+    description = "Detects wceaux.dll access while WCE pass-the-hash remote command execution on source host"
+    reference = "https://www.jpcert.or.jp/english/pub/sr/ir_research.html, https://jpcertcc.github.io/ToolAnalysisResultSheet"
+    sigma_id = "1de68c67-af5c-4097-9c85-fe5578e09e67"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Credential Access"
+    mitre_attack_technique = "OS Credential Dumping"
+    version = "1.00" 
+
+  events:
+    $event.metadata.event_type = "FILE_READ" or $event.metadata.event_type = "FILE_OPEN"
+    $event.metadata.product_event_type = /4656|4663/ nocase
+    $event.target.file.full_path = /.*\\wceaux\.dll/ nocase
+    
+  condition: 
+    $event
+}
