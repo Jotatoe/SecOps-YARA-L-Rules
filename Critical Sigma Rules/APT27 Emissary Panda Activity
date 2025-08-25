@@ -1,0 +1,34 @@
+rule APT27_Emissary_Panda_Activity {
+ meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects the execution of DLL side-loading malware used by threat group Emissary Panda aka APT27."
+    license = "https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md"
+    reference = "https://app.any.run/tasks/579e7587-f09d-4aae-8b07-472833262965, https://twitter.com/cyb3rops/status/1168863899531132929, https://research.nccgroup.com/2018/05/18/emissary-panda-a-potential-new-malicious-tool/"
+    sigma_id = "9aa01d62-7667-4d3b-acb8-8cb5103e2014"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Defense Evasion"
+    mitre_attack_technique = "Hijack Execution Flow: DLL"
+    version = "1.00"
+
+  events:
+    $selection_sllauncher.metadata.event_type = "PROCESS_LAUNCH" and 
+    (
+        (
+            re.regex($selection_sllauncher.principal.process.file.full_path, `.*\\sllauncher\.exe`) nocase and
+            re.regex($selection_sllauncher.target.process.file.full_path, `.*\\svchost\.exe`) nocase
+        )
+
+        or 
+        
+        (
+            re.regex($selection_sllauncher.principal.process.file.full_path, `.*\\AppData\\Roaming\\.*`) nocase and
+            re.regex($selection_sllauncher.target.process.file.full_path, `.*\\svchost\.exe`) nocase and
+            re.regex($selection_sllauncher.target.process.command_line, `.*-k.*`) nocase
+        )
+    )
+
+  condition:
+    $selection_sllauncher
+}
