@@ -1,0 +1,24 @@
+rule Hacktool_SharpUp_Privesc_Tool_Execution {
+  meta:
+    author = "Florian Roth (Nextron Systems)"
+    description = "Detects the use of SharpUp, a tool for local privilege escalation"
+    reference = "https://github.com/GhostPack/SharpUp"
+    sigma_id = "c484e533-ee16-4a93-b6ac-f0ea4868b2f1"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Privilege Escalation, Discovery, Execution"
+    mitre_attack_technique = "Group Policy Discovery, attack.System Services: Service Execution, Hijack Execution Flow: Executable Installer File Permissions Weakness"
+    version = "1.00" 
+
+  events:
+    $event.additional.fields["Message"] = /SharpUp/ nocase
+    $event.metadata.event_type = "PROCESS_LAUNCH"
+    (
+        $event.target.process.file.full_path = /\\SharpUp\.exe$/ nocase or
+        $event.target.process.command_line = /HijackablePaths|UnquotedServicePath|ProcessDLLHijack|ModifiableServiceBinaries|ModifiableScheduledTask|DomainGPPPassword|CachedGPPPassword/ nocase
+    )
+    
+  condition: 
+    $event
+}
