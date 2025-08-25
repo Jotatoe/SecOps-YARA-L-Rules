@@ -1,0 +1,25 @@
+rule Qakbot_Rundll32_Exports_Execution {
+  meta:
+    author = "X__Junior (Nextron Systems)"
+    description = "Detects specific process tree behavior of a \"rundll32\" execution with exports linked with Qakbot activity."
+    reference = "https://github.com/pr0xylife/Qakbot/"
+    sigma_id = "339ed3d6-5490-46d0-96a7-8abe33078f58"
+    severity = "CRITICAL"
+    priority = "CRITICAL"
+    platform = "Windows"
+    mitre_attack_tactic = "Defence Evasion, Execution"
+    mitre_attack_technique = "System Binary Proxy Execution: Rundll32, System Binary Proxy Execution"
+    falsepositives = "Unlikely" 
+
+  events:
+    $event.metadata.event_type = "PROCESS_LAUNCH"
+    (
+        $event.principal.process.file.full_path = /\\cmd\.exe|\\cscript\.exe|\\curl\.exe|\\mshta\.exe|\\powershell\.exe|\\pwsh\.exe|\\wscript\.exe/ nocase and
+        $event.target.process.file.full_path = /\\rundll32\.exe$/ nocase and
+        $event.target.process.command_line = /:\\ProgramData\\|:\\Users\\Public\\|\\AppData\\Local\\Temp\\|\\AppData\\Roaming\\/ nocase and
+        $event.target.process.command_line = /aslr|bind|DrawThemeIcon|GG10|GL70|jhbvygftr|kjhbhkjvydrt|LS88|Motd|N115|next|Nikn|print|qqqb|qqqq|RS32|Test|Time|Updt|vips|Wind|WW50|X555|XL55|xlAutoOpen|XS88/ nocase
+    )
+
+  condition:
+    $event
+}
